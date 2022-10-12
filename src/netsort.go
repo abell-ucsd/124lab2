@@ -168,12 +168,12 @@ func loopOverInputsAndSend(chanlist []chan []byte, numserv int){
 		}
 		//send done message to all endpoints once finished reading input file
 		//fmt.Println("/n DONEEEEEE done reading input file")
-		for _, element := range chanlist {
+	}
+	for _, element := range chanlist {
 			data_to_send := make([]byte, 101)
 			//data_to_send[0]=0
 			element <- data_to_send
 		}
-	}
 }
 func recieveData(server net.Listener,ch chan []byte){
 	for {
