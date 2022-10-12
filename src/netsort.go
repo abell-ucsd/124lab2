@@ -56,13 +56,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("Invalid serverId, must be an int %v", err)
 	}
-	fmt.Println("My server Id:", serverId)
+	//fmt.Println("My server Id:", serverId)
 
 	// Read server configs from file
 	scs := readServerConfigs(os.Args[4])
 	SERVER_HOST := ""
 	SERVER_PORT := ""
-	fmt.Println("Got the following server configs:", scs.Servers[0].Port)
+	//fmt.Println("Got the following server configs:", scs.Servers[0].Port)
 	numserv := len(scs.Servers)
 	chanlist := make([]chan []byte, numserv)
 	
@@ -73,18 +73,18 @@ func main() {
 		if element.ServerId == serverId {
 			SERVER_HOST = element.Host
 			SERVER_PORT = element.Port
-			fmt.Println(SERVER_HOST+":"+SERVER_PORT)
+			//fmt.Println(SERVER_HOST+":"+SERVER_PORT)
 			server, err := net.Listen("tcp", SERVER_HOST+":"+SERVER_PORT)
 			defer server.Close()
-			fmt.Println("Listening on ", SERVER_PORT)
+			//fmt.Println("Listening on ", SERVER_PORT)
 			if err != nil {
-					fmt.Println("Error listening:", err.Error())
+					//fmt.Println("Error listening:", err.Error())
 					os.Exit(1)
 			}
 			go recieveData(server, currchan)
 		} else {
 			printout :="Establishing SEND connection with:" + element.Host+":"+element.Port
-			fmt.Println(printout)
+			//fmt.Println(printout)
 			go sendData(element.Host+":"+element.Port, currchan, serverId)
 		}
 		//else dial up and send my info
@@ -101,7 +101,7 @@ func main() {
 	for{
 		data := <- chanlist[serverId]
 		if data[0] == 0 {
-		fmt.Println("recieved eos signal")
+		//fmt.Println("recieved eos signal")
 		completedStreams = completedStreams + 1
 		} else {
 			chunk := data[1:101]
@@ -113,7 +113,7 @@ func main() {
 			//fmt.Println("recieved data", data)
 		}
 		if completedStreams == numserv {
-			fmt.Println("FINISHED COLLECTING DATA")
+			//fmt.Println("FINISHED COLLECTING DATA")
 			break
 		}
 	}
@@ -153,9 +153,6 @@ func loopOverInputsAndSend(chanlist []chan []byte, numserv int){
 		for chunk_pos := 0; chunk_pos < len(key_val); chunk_pos=chunk_pos+100 {
 			curr_kvp := key_val[chunk_pos:chunk_pos+100]
 			
-			
-			
-
 			entry_id := curr_kvp[0]
 			byte2int := uint(entry_id >> (8 - uint(math.Log2(float64(numserv)))))
 			
@@ -163,14 +160,14 @@ func loopOverInputsAndSend(chanlist []chan []byte, numserv int){
 			data_to_send[0]=1
 			copy(data_to_send[1:],curr_kvp[:])
 			out := "putting data into channel "+strconv.Itoa(int(byte2int)) 
-			fmt.Println(out)
+			//fmt.Println(out)
 			//for _, n := range(data_to_send) {
 			//	fmt.Printf("% 08b", n) // prints 00000000 11111101
 			//}
 			chanlist[byte2int] <- data_to_send
 		}
 		//send done message to all endpoints once finished reading input file
-		fmt.Println("/n DONEEEEEE done reading input file")
+		//fmt.Println("/n DONEEEEEE done reading input file")
 		for _, element := range chanlist {
 			data_to_send := make([]byte, 101)
 			//data_to_send[0]=0
@@ -182,10 +179,10 @@ func recieveData(server net.Listener,ch chan []byte){
 	for {
                 connection, err := server.Accept()
                 if err != nil {
-                        fmt.Println("Error accepting: ", err.Error())
+                        //fmt.Println("Error accepting: ", err.Error())
                         os.Exit(1)
                 }
-                fmt.Println("client connected")
+                //fmt.Println("client connected")
                 go processClient(connection, ch)
         }
 
@@ -196,12 +193,12 @@ func processClient(connection net.Conn, ch chan []byte) {
 			buffer := make([]byte, 1024)
 			mLen, err := connection.Read(buffer)
 			if err != nil {
-					fmt.Println("Error reading:", err.Error())
+					//fmt.Println("Error reading:", err.Error())
 			}
-			fmt.Println("Received in processClient: ", buffer[:mLen])
+			//fmt.Println("Received in processClient: ", buffer[:mLen])
 			ch <- buffer[:mLen]
 			if buffer[0] == 0 {
-				fmt.Println("eos in processClient")
+				//fmt.Println("eos in processClient")
 				break
 			}
 			_, err = connection.Write([]byte("Thanks! Got your message:" + string(buffer[:mLen])))
@@ -210,29 +207,29 @@ func processClient(connection net.Conn, ch chan []byte) {
 }
 
 func sendData(url string, ch chan []byte, id int){
-time.Sleep(10000 * time.Millisecond)
+time.Sleep(5000 * time.Millisecond)
 	out2 := "trying to connect to " + url
-	fmt.Println(out2)
+	//fmt.Println(out2)
     connection, err := net.Dial("tcp", url)
 	if err != nil {
-		time.Sleep(2500 * time.Millisecond)
+		time.Sleep(250 * time.Millisecond)
 		go sendData(url, ch, id)
         return 
     }
 	defer connection.Close()
 	out := "successfully established send connection with: " + url
-	fmt.Println(out)
+	//fmt.Println(out)
     ///send some data
 	//message := "greetings from " + strconv.Itoa(id) + " to " + url
     //_, err = connection.Write([]byte(message))
 	for {
 		cur := <- ch
-		fmt.Println("sending from ", id, " to", url)
+		//fmt.Println("sending from ", id, " to", url)
 		//for _, n := range(cur) {
 		//	fmt.Printf("% 08b", n) // prints 00000000 11111101
 		//}
 		if cur[0] == 0 {
-			fmt.Println("terminataing")
+			//fmt.Println("terminataing")
 			_, err = connection.Write(cur)
 			break
 		}
