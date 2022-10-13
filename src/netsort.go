@@ -56,7 +56,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Invalid serverId, must be an int %v", err)
 	}
-	//fmt.Println("My server Id:", serverId)
+	fmt.Println("My server Id:", serverId)
 
 	// Read server configs from file
 	scs := readServerConfigs(os.Args[4])
@@ -115,7 +115,7 @@ func main() {
 			
 			
 		if data[0] == 0 {
-		//fmt.Println("recieved eos signal")
+		fmt.Println("recieved eos signal")
 		completedStreams = completedStreams + 1
 		} else {
 			chunk := data[1:101]
@@ -127,7 +127,7 @@ func main() {
 			//fmt.Println("recieved data", data)
 		}
 		if completedStreams == numserv {
-			//fmt.Println("FINISHED COLLECTING DATA")
+			fmt.Println("FINISHED COLLECTING DATA")
 			break
 		}
 	}
@@ -182,7 +182,7 @@ func loopOverInputsAndSend(chanlist []chan []byte, numserv int){
 			//time.Sleep(20 * time.Millisecond)
 		}
 		//send done message to all endpoints once finished reading input file
-		//fmt.Println("/n DONEEEEEE done reading input file")
+		fmt.Println("/n DONEEEEEE done reading input file")
 	}
 	for _, element := range chanlist {
 			data_to_send := make([]byte, 101)
@@ -232,8 +232,8 @@ time.Sleep(5000 * time.Millisecond)
         return 
     }
 	defer connection.Close()
-	//out := "successfully established send connection with: " + url
-	//fmt.Println(out)
+	out := "successfully established send connection with: " + url
+	fmt.Println(out)
     ///send some data
 	//message := "greetings from " + strconv.Itoa(id) + " to " + url
     //_, err = connection.Write([]byte(message))
@@ -242,14 +242,14 @@ time.Sleep(5000 * time.Millisecond)
 		if (len(cur) != 101) {
 			fmt.Println("len not 101")
 		}
-		entry_id := cur[1]
+		//entry_id := cur[1]
 		//fmt.Println(entry_id)
-		byte2int := int(entry_id >> (8 - uint(math.Log2(float64(4)))))
-		b2jh, _ := strconv.Atoi(url[len(url)-1:])
-		if byte2int != b2jh {
-			fmt.Println("|",url, ". ", url[len(url)-1:], ". ", byte2int,"|")
+		//byte2int := int(entry_id >> (8 - uint(math.Log2(float64(4)))))
+		//b2jh, _ := strconv.Atoi(url[len(url)-1:])
+		//if byte2int != b2jh {
+			//fmt.Println("|",url, ". ", url[len(url)-1:], ". ", byte2int,"|")
 			
-		}
+		//}
 		//fmt.Println("sending from ", id, " to", url)
 		//for _, n := range(cur) {
 		//	fmt.Printf("% 08b", n) // prints 00000000 11111101
