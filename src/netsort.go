@@ -124,28 +124,27 @@ func main() {
 				
 			datastruct = append(datastruct, [][]byte{key,value})
 			
-			//fmt.Println("recieved data", data)
+			fmt.Println("recieved data", data)
 		}
 		if completedStreams == numserv {
 			fmt.Println("FINISHED COLLECTING DATA")
 			break
 		}
 	}
+	
+	fmt.Println("Sorting")
 	sort.Sort(ByKey(datastruct))
 	out, out_err := os.Create(os.Args[3])
     check(out_err)
 	defer out.Close()
+	
 	for chunk_pos := 0; chunk_pos < len(datastruct); chunk_pos=chunk_pos+1 {
 		entry := datastruct[chunk_pos]
 		out.Write(entry[0])
 		out.Write(entry[1])
 	}
-	
+	fmt.Println("actually done")
 
-
-	/*
-		Implement Distributed Sort
-	*/
 }
 func loopOverInputsAndSend(chanlist []chan []byte, numserv int){
 	//loop over all data, send stuff to appropriate channels
@@ -153,7 +152,7 @@ func loopOverInputsAndSend(chanlist []chan []byte, numserv int){
 	defer f.Close()
     check(err)
 	reader := bufio.NewReader(f)
-	chunksize := 1
+	chunksize := 4000
 	//key_val := make([]byte, 100)
 	for {
 		key_val_try := make([]byte, 100*chunksize)
@@ -182,13 +181,14 @@ func loopOverInputsAndSend(chanlist []chan []byte, numserv int){
 			//time.Sleep(20 * time.Millisecond)
 		}
 		//send done message to all endpoints once finished reading input file
-		fmt.Println("/n DONEEEEEE done reading input file")
+		
 	}
 	for _, element := range chanlist {
 			data_to_send := make([]byte, 101)
 			//data_to_send[0]=0
 			element <- data_to_send
 		}
+	fmt.Println("DONE reading input file")
 }
 func recieveData(server net.Listener,ch chan []byte){
 	for {
