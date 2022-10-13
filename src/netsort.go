@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
@@ -83,7 +82,7 @@ func main() {
 			}
 			go recieveData(server, currchan)
 		} else {
-			printout :="Establishing SEND connection with:" + element.Host+":"+element.Port
+			//printout :="Establishing SEND connection with:" + element.Host+":"+element.Port
 			//fmt.Println(printout)
 			go sendData(element.Host+":"+element.Port, currchan, serverId)
 		}
@@ -159,7 +158,7 @@ func loopOverInputsAndSend(chanlist []chan []byte, numserv int){
 			data_to_send := make([]byte, 101)
 			data_to_send[0]=1
 			copy(data_to_send[1:],curr_kvp[:])
-			out := "putting data into channel "+strconv.Itoa(int(byte2int)) 
+			//out := "putting data into channel "+strconv.Itoa(int(byte2int)) 
 			//fmt.Println(out)
 			//for _, n := range(data_to_send) {
 			//	fmt.Printf("% 08b", n) // prints 00000000 11111101
@@ -208,7 +207,7 @@ func processClient(connection net.Conn, ch chan []byte) {
 
 func sendData(url string, ch chan []byte, id int){
 time.Sleep(5000 * time.Millisecond)
-	out2 := "trying to connect to " + url
+	//out2 := "trying to connect to " + url
 	//fmt.Println(out2)
     connection, err := net.Dial("tcp", url)
 	if err != nil {
@@ -217,7 +216,7 @@ time.Sleep(5000 * time.Millisecond)
         return 
     }
 	defer connection.Close()
-	out := "successfully established send connection with: " + url
+	//out := "successfully established send connection with: " + url
 	//fmt.Println(out)
     ///send some data
 	//message := "greetings from " + strconv.Itoa(id) + " to " + url
