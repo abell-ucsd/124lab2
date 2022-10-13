@@ -10,10 +10,10 @@ go build -o netsort netsort.go
 for i in $(seq 0 3)
 do
   SERVER_ID=$i
-  INPUT_FILE_PATH='testcases/testcase1/input-'${SERVER_ID}'.dat'
-  OUTPUT_FILE_PATH='testcases/testcase1/output-'${SERVER_ID}'.dat'
+  INPUT_FILE_PATH='testcases/testcase1/input-'${SERVER_ID}a'.dat'
+  OUTPUT_FILE_PATH='testcases/testcase1/output-'${SERVER_ID}a'.dat'
   CONFIG_FILE_PATH='testcases/testcase1/config.yaml'
-  nohup ./netsort ${SERVER_ID} ${INPUT_FILE_PATH} ${OUTPUT_FILE_PATH} ${CONFIG_FILE_PATH} &
+  nohup ./netsort ${SERVER_ID} ${INPUT_FILE_PATH} ${OUTPUT_FILE_PATH} ${CONFIG_FILE_PATH} > ${SERVER_ID}out.txt &
 done
 
 wait

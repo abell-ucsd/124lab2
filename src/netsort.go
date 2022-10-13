@@ -13,6 +13,7 @@ import (
 	"bufio"
 	"io"
 	"time"
+	"fmt"
 )
 
 type ByKey [][][]byte
@@ -99,6 +100,20 @@ func main() {
 	completedStreams := 0
 	for{
 		data := <- chanlist[serverId]
+		
+		entry_id := data[1]
+		//fmt.Println(entry_id)
+		byte2int := int(entry_id >> (8 - uint(math.Log2(float64(4)))))
+		b2jh := serverId
+		if byte2int != b2jh {
+			fmt.Println("|kkk", serverId, ". ", byte2int,"|kkk", data)
+			
+		}
+		
+		//entry_id := curr_kvp[0]
+		//byte2int := uint(entry_id >> (8 - uint(math.Log2(float64(numserv)))))
+			
+			
 		if data[0] == 0 {
 		//fmt.Println("recieved eos signal")
 		completedStreams = completedStreams + 1
@@ -138,7 +153,7 @@ func loopOverInputsAndSend(chanlist []chan []byte, numserv int){
 	defer f.Close()
     check(err)
 	reader := bufio.NewReader(f)
-	chunksize := 40000
+	chunksize := 1
 	//key_val := make([]byte, 100)
 	for {
 		key_val_try := make([]byte, 100*chunksize)
@@ -164,6 +179,7 @@ func loopOverInputsAndSend(chanlist []chan []byte, numserv int){
 			//	fmt.Printf("% 08b", n) // prints 00000000 11111101
 			//}
 			chanlist[byte2int] <- data_to_send
+			//time.Sleep(20 * time.Millisecond)
 		}
 		//send done message to all endpoints once finished reading input file
 		//fmt.Println("/n DONEEEEEE done reading input file")
@@ -189,7 +205,7 @@ func recieveData(server net.Listener,ch chan []byte){
 func processClient(connection net.Conn, ch chan []byte) {
 		defer connection.Close()
         for{
-			buffer := make([]byte, 1024)
+			buffer := make([]byte, 101)
 			mLen, err := connection.Read(buffer)
 			if err != nil {
 					//fmt.Println("Error reading:", err.Error())
@@ -223,6 +239,17 @@ time.Sleep(5000 * time.Millisecond)
     //_, err = connection.Write([]byte(message))
 	for {
 		cur := <- ch
+		if (len(cur) != 101) {
+			fmt.Println("len not 101")
+		}
+		entry_id := cur[1]
+		//fmt.Println(entry_id)
+		byte2int := int(entry_id >> (8 - uint(math.Log2(float64(4)))))
+		b2jh, _ := strconv.Atoi(url[len(url)-1:])
+		if byte2int != b2jh {
+			fmt.Println("|",url, ". ", url[len(url)-1:], ". ", byte2int,"|")
+			
+		}
 		//fmt.Println("sending from ", id, " to", url)
 		//for _, n := range(cur) {
 		//	fmt.Printf("% 08b", n) // prints 00000000 11111101
